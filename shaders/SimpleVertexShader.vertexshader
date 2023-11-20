@@ -1,0 +1,26 @@
+#version 330 core
+
+layout(location = 0) in vec3 inPosition;
+layout(location = 1) in vec2 inUV;
+layout(location = 2) in vec3 inNormal; // Input normal attribute
+
+out vec2 fragUV;
+out vec4 fragNormal;
+out vec4 fragLightDir; // Vector from the fragment to the light source
+out vec4 fragViewDir; // Vector from the fragment to the camera
+
+uniform mat4 MVP; // Model-View-Projection matrix
+uniform mat4 M;   // Model matrix
+uniform vec3 pointLightPosition; // Position of the point light
+uniform vec3 camPosition;  // Position of the camera
+
+void main() {
+    vec3 worldPosition = vec3(M * vec4(inPosition, 1.0)); // Transform vertex to world space
+    gl_Position = MVP * vec4(inPosition, 1.0);        // Transform vertex to clip space
+
+    fragUV = inUV;
+    fragNormal = M * vec4(inNormal,0.0); // Transform normal to world space
+    fragLightDir = vec4(pointLightPosition - worldPosition,0.0); // Calculate light direction
+    fragViewDir = vec4(camPosition - worldPosition,0.0);   // Calculate view direction
+}
+

@@ -1,0 +1,39 @@
+#version 330 core
+
+in vec2 fragUV;
+in vec4 fragNormal;
+in vec4 fragLightDir;
+in vec4 fragViewDir;
+
+out vec3 FragColor;
+
+uniform sampler2D textureSampler; // Texture sampler
+uniform vec3 pointLightColor;     // Point light color
+uniform float pointLightPower;    // Point light power
+uniform float reflectivity;       // Reflectivity factor
+
+void main() {
+    // Ambient lighting
+    vec3 textureColor = texture(textureSampler, fragUV).rgb;
+
+    vec3 ambiant = pointLightColor/30;
+
+    // Diffuse lighting
+    vec4 normal = normalize(fragLightDir);
+    vec4 lightDir = normalize(fragLightDir);
+    float distance = length(fragLightDir);
+    float cosTheta = clamp(dot(lightDir,normal), 0, 1);
+
+    vec3 diffuseColor = pointLightColor * cosTheta / 25;
+
+    // Specular lighting
+    vec4 viewDir = normalize(fragViewDir);
+    vec4 reflectDir = reflect(-lightDir, normal);
+    float cosAlpha = clamp(dot(reflectDir,viewDir), 0, 1);
+    vec3 specularColor = pointLightColor * pow(cosAlpha, 5)/25;
+
+
+
+    FragColor = textureColor * (ambiant + (diffuseColor+specularColor) / distance * pointLightPower) ;
+}
+
