@@ -45,4 +45,6 @@ make
 ```
 
 7. Run the executable:
+```bash
 ./solarsystem
+```
